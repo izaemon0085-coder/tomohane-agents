@@ -9,6 +9,7 @@
 |---|---|---|---|
 | 🦉 フクロウ（安全係） | 送るたび | 合言葉・パスワード・カギ・保存データが入っていないか見る。見つけたら止める | `agents/owl-check.mjs` |
 | 🐱 ヤマネコ（建設係） | 送るたび | テスト（`npm test`）を Node 20・22・24 で | `.github/workflows/check.yml` |
+| 🦉🐱 静的解析 | コミットの前（パソコン）・送るたび（GitHub） | 構文のまちがい・eval・使っていない import など。いまは知らせるだけ。HTML のエスケープもれなどは GitHub の CodeQL（Security タブ） | `agents/lint.mjs` |
 | 🐕 シバ（案内係） | プルリクエストでテストが落ちたとき | どのテストが・どこで落ちたかをコメント | `agents/shiba-guide.mjs` |
 | 🐰 ウサギ（お知らせ係） | 人が版のタグ（`v0.1.0` など）を送ったとき | 前の版からの変更をまとめて、リリースを作る | `agents/usagi-notes.mjs`・`.github/workflows/release.yml` |
 | 🐾 モグ（保存係） | パソコンで毎日21時 | 送り忘れの確認と、全部のリポジトリの写し | ともはね の `tools/mogu/` |
@@ -20,8 +21,9 @@
 合言葉らしいものがあると、🦉 フクロウの注意もコメントで出ます。
 
 ```sh
-node tools/tomo-agent.mjs install      # Projects の中の全部のリポジトリに、Git のフックを入れる
+node tools/tomo-agent.mjs install      # Projects の中の全部のリポジトリに、Git のフック（ウサギの案・静的解析）を入れる
 node tools/tomo-agent.mjs suggest      # いまステージした変更の案を、画面に出すだけ
+node tools/tomo-agent.mjs lint         # 静的解析（--staged でステージしたものだけ）
 node tools/tomo-agent.mjs status       # どこに入っているか
 node tools/tomo-agent.mjs off          # 止めるボタン（全部のリポジトリで、その場で止まる）／ on でもどる
 node tools/tomo-agent.mjs uninstall    # フックを外す

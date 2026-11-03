@@ -1,4 +1,5 @@
 # 🦉🐱🐕 みんなで使うチェック（ほかのリポジトリから呼ぶ）
+# フクロウの安全チェック・ヤマネコの静的解析・テスト・シバの案内
 #   jobs:
 #     agents:
 #       uses: izaemon0085-coder/tomohane-agents/.github/workflows/check.yml@main
@@ -37,6 +38,23 @@ jobs:
         with:
           node-version: 22
       - run: node .tomohane-agents/agents/owl-check.mjs
+
+  lint:
+    name: ヤマネコの静的解析
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: izaemon0085-coder/tomohane-agents
+          ref: ${{ inputs.agents-ref }}
+          path: .tomohane-agents
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # 「まちがい」（構文・eval など）があれば赤くなる。いまはマージの条件にはしない（知らせるだけ）
+      - run: node .tomohane-agents/agents/lint.mjs --strict
 
   test:
     name: test (${{ matrix.node }})
