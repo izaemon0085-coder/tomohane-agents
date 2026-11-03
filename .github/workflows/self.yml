@@ -1,0 +1,17 @@
+# tomohane-agents 自身のチェック（自分の共通チェックを、自分で呼ぶ）
+name: テスト
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  agents:
+    uses: ./.github/workflows/check.yml
+    with:
+      node-versions: '[22]'
+      agents-ref: ${{ github.sha }}

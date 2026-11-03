@@ -1,0 +1,71 @@
+# 🦉🐱🐕 みんなで使うチェック（ほかのリポジトリから呼ぶ）
+#   jobs:
+#     agents:
+#       uses: izaemon0085-coder/tomohane-agents/.github/workflows/check.yml@main
+# エージェントは「見る・知らせる」まで。マージを決めるのは人
+name: エージェントのチェック
+
+on:
+  workflow_call:
+    inputs:
+      run-tests:
+        description: テスト（npm test）を動かすか。設計図だけのリポジトリは false
+        type: boolean
+        default: true
+      node-versions:
+        description: テストする Node の版（JSON の配列）
+        type: string
+        default: '[20, 22, 24]'
+      agents-ref:
+        description: エージェントの道具の版（ふつうは main）
+        type: string
+        default: main
+
+jobs:
+  owl:
+    name: フクロウの安全チェック
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: izaemon0085-coder/tomohane-agents
+          ref: ${{ inputs.agents-ref }}
+          path: .tomohane-agents
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node .tomohane-agents/agents/owl-check.mjs
+
+  test:
+    name: test (${{ matrix.node }})
+    if: inputs.run-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ${{ fromJSON(inputs.node-versions) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: テスト
+        shell: bash
+        run: npm test 2>&1 | tee test-output.txt
+      - name: シバの案内の道具を取る
+        if: failure() && github.event_name == 'pull_request' && matrix.node == 22
+        uses: actions/checkout@v4
+        with:
+          repository: izaemon0085-coder/tomohane-agents
+          ref: ${{ inputs.agents-ref }}
+          path: .tomohane-agents
+      - name: シバの案内
+        if: failure() && github.event_name == 'pull_request' && matrix.node == 22
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: node .tomohane-agents/agents/shiba-guide.mjs test-output.txt

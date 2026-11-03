@@ -1,0 +1,37 @@
+# 🐰 ウサギの変更まとめ（ほかのリポジトリから呼ぶ。人が版のタグを送ったときだけ）
+#   on: { push: { tags: ['v*'] } }
+#   permissions: { contents: write }
+#   jobs:
+#     usagi:
+#       uses: izaemon0085-coder/tomohane-agents/.github/workflows/release.yml@main
+name: ウサギの変更まとめ
+
+on:
+  workflow_call:
+    inputs:
+      agents-ref:
+        type: string
+        default: main
+
+jobs:
+  notes:
+    name: ウサギのリリースノート
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: izaemon0085-coder/tomohane-agents
+          ref: ${{ inputs.agents-ref }}
+          path: .tomohane-agents
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node .tomohane-agents/agents/usagi-notes.mjs "$GITHUB_REF_NAME" > "$RUNNER_TEMP/notes.md"
+      - name: リリースを作る
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file "$RUNNER_TEMP/notes.md" --verify-tag

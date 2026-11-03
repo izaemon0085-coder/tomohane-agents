@@ -1,0 +1,9 @@
+{
+  "name": "tomohane-agents",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ともはね のエージェント（フクロウ・ヤマネコ・シバ・ウサギ）を1か所にまとめた共通の道具",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": { "test": "node --test test/*.test.js" }
+}
