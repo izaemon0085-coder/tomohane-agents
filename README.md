@@ -32,6 +32,25 @@ node tools/tomo-agent.mjs uninstall    # フックを外す
 - `git commit -m "…"` のように、人がもう書いているときは何もしません
 - ほかのフックがあるリポジトリには、上書きしません
 
+## 🏡 家の倉庫 kura（ローカル回線の Git サーバー）
+
+家の Wi-Fi・ローカル回線の中だけで使う Git サーバーです。Git についている `git http-backend` を使うので、SSH のサーバーなどは要りません。
+
+```sh
+node tools/kura.mjs init              # 倉庫を作る（合言葉を1回だけ表示）
+node tools/kura.mjs add ../tomojan    # 倉庫に入れる（そのリポジトリに remote「kura」が足される）
+node tools/kura.mjs serve             # 倉庫を開く（ポート 3990。Ctrl+C で閉じる）
+node tools/kura.mjs sync              # 🐾 モグが GitHub とそろえる
+node tools/kura.mjs status
+```
+
+- **家の中（192.168.x.x など）からだけ**。インターネットからのアクセスは断って、記録に残す
+- 送る・受け取るには **合言葉** が要る（保存するのはハッシュだけ）
+- 2台目の端末では：`git clone http://<このパソコンのアドレス>:3990/<名前>.git`（ユーザー名は何でも、パスワードに合言葉）
+- 🐾 sync：**main は GitHub から受け取るだけ**（main はプルリクエストで入れる決まりのため）。ほかのブランチは GitHub へ送る（上書きはしない）。インターネットが切れていても、止まらずに知らせるだけ
+- 記録：`ホーム	omohane-kurakura-log.jsonl`（開いた・送られた・断った・そろえた）
+- 2台目から初めてつなぐとき、Windows のファイアウォールが「Node.js の通信を許可するか」を聞くことがある → **プライベート ネットワークだけ** 許可する
+
 ## 呼び方
 
 `.github/workflows/test.yml`
