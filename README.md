@@ -13,6 +13,23 @@
 | 🐰 ウサギ（お知らせ係） | 人が版のタグ（`v0.1.0` など）を送ったとき | 前の版からの変更をまとめて、リリースを作る | `agents/usagi-notes.mjs`・`.github/workflows/release.yml` |
 | 🐾 モグ（保存係） | パソコンで毎日21時 | 送り忘れの確認と、全部のリポジトリの写し | ともはね の `tools/mogu/` |
 
+## 🐰 パソコンの道具 tomo-agent（コミットメッセージの案）
+
+コミットするとき、ウサギが変更を読んで **コミットメッセージの案** をエディタに書いておきます。
+**人が見て、直してから保存します。** 電波がなくても動きます（決まりで作る。AI は使わない）。
+合言葉らしいものがあると、🦉 フクロウの注意もコメントで出ます。
+
+```sh
+node tools/tomo-agent.mjs install      # Projects の中の全部のリポジトリに、Git のフックを入れる
+node tools/tomo-agent.mjs suggest      # いまステージした変更の案を、画面に出すだけ
+node tools/tomo-agent.mjs status       # どこに入っているか
+node tools/tomo-agent.mjs off          # 止めるボタン（全部のリポジトリで、その場で止まる）／ on でもどる
+node tools/tomo-agent.mjs uninstall    # フックを外す
+```
+
+- `git commit -m "…"` のように、人がもう書いているときは何もしません
+- ほかのフックがあるリポジトリには、上書きしません
+
 ## 呼び方
 
 `.github/workflows/test.yml`
